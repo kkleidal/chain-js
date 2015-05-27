@@ -1,0 +1,8 @@
+#!/bin/bash
+
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+if [[ $* == *-i* ]]; then
+    docker run -p 0.0.0.0:8080:3000 -v $DIR/../../app:/usr/src/app -w /usr/src/app -it --rm kkleidal/chain-js
+else
+    docker run -p 0.0.0.0:8080:3000 -v $DIR/../../app:/usr/src/app -w /usr/src/app -d kkleidal/chain-js
+fi
