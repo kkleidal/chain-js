@@ -1,0 +1,15 @@
+#!/bin/bash
+
+ls -A /var/lib/mysql
+if [ ! "$(ls -A /var/lib/mysql)" ]; then
+    # Empty.  Restore.
+    echo "MySQL persistant data empty. Restoring..."
+    cp -R /var/lib/mysql.old/. /var/lib/mysql
+    echo "Restored."
+fi
+chmod -R a+rwx /var/lib/mysql
+/etc/init.d/mysql start
+(echo 'CREATE DATABASE IF NOT EXISTS database_development;' | mysql -ppass)
+
+cd /usr/src/app
+(npm install; npm start)

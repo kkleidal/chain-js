@@ -1,9 +1,10 @@
 var express = require('express');
 var router = express.Router();
+var render = require(__dirname + '/../lib/render');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+  render(req, res, 200, 'index', { title: 'Users' });
 });
 
 module.exports = router;
