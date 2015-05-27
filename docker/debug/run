@@ -1,4 +1,14 @@
 #!/bin/bash
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-docker run -p 0.0.0.0:8080:3000 -v $DIR/../../app:/usr/src/app -w /usr/src/app -it --rm kkleidal/chain-js:debug
+INTERACTIVE="-d"
+if [[ $* == *-i* ]]; then
+    INTERACTIVE="-it --rm"
+fi
+PERSIST=""
+if [[ $* == *--persist* ]]; then
+    PERSIST="--volumes-from chain-js-data"
+fi
+COMMAND="docker run -p 0.0.0.0:8080:3000 -v $DIR/../../app:/usr/src/app -w /usr/src/app $PERSIST $INTERACTIVE kkleidal/chain-js"
+echo $COMMAND
+bash -c "$COMMAND"

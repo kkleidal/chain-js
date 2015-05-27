@@ -13,9 +13,9 @@
     "express": "~4.12.4",
     "handlebars": "^3.0.3",
     "morgan": "~1.5.3",
+    "mysql": "^2.6.2",
     "sequelize": "^2.0.0-rc1",
     "sequelize-cli": "^1.7.0",
-    "serve-favicon": "~2.2.1",
-    "sqlite3": "^3.0.8"
+    "serve-favicon": "~2.2.1"
   }
 }
