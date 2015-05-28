@@ -37,9 +37,10 @@ router.get('/', function(req, res, next) {
     var whereClause = ModelClass.custom.whereFromQuery(req.query) || {};
     var limit = req.query.limit ? Integer.parse(req.query.limit, 10) : 5;
     var offset = req.query.offset ? Integer.parse(req.query.offset, 10) : 0;
+    var compact = req.query.compact ? (req.query.compact === "true") : true;
     ModelClass.findAll({order: 'id DESC', where: whereClause, limit: limit, offset: offset}).then(function(result) {
         async.map(result, function(inst, cb) {
-            ModelClass.classMethods.jsonLD(inst, cb);
+            ModelClass.options.classMethods.jsonLD(inst, compact, cb);
         }, function(err, mapped) {
             if (err) {
                 render(req, res, 500, "error", {message: "Error when resolving results.", error: err});
