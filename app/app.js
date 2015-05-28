@@ -6,8 +6,9 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var render = require(__dirname + '/lib/render');
 
+var models = require('./models/index');
 var routes = require('./routes/index');
-var sites = require('./routes/sites');
+var resource = require('./routes/resource');
 
 var app = express();
 
@@ -28,7 +29,9 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/sites', sites);
+for (var resourceName in models.resourceLookup) {
+    app.use('/' + resourceName, resource(models.resourceLookup[resourceName]));
+}
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
