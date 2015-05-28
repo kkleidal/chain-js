@@ -3,6 +3,20 @@
 var validate = require('jsonschema').validate;
 var extend = require('extend');
 
+function idSchema(description) {
+    return {
+        "description": description, 
+        "type": "object",
+        "properties": {
+            "@id": {
+                "description": "URI of resource",
+                "type": "string"
+            }
+        },
+        "required": ["@id"]
+    }
+}
+
 function containsAllRequiredFields(schema, data) {
     var requiredFields = schema.required || [];
     for (var i = 0; i < requiredFields.length; i++) {
@@ -62,6 +76,7 @@ function edit(inst, req, cb) {
 }
 
 module.exports = {
+    idSchema: idSchema,
     removeUnknownProperties: removeUnknownProperties,
     validate: myValidate,
     create: create,

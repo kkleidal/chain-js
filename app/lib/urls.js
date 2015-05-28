@@ -2,14 +2,17 @@
 
 var models = require(__dirname + "/../models/index");
 
-function url(req, dbInst) {
+function getBase(req) {
     var protocol = "http";
     if (req.connection.encrypted) {
         protocol = "https";
     }
-    var base = protocol + "://" + req.headers.host;
+    return protocol + "://" + req.headers.host;
+}
+
+function url(req, dbInst) {
     var path = dbInst.__options.classMethods.path(dbInst);
-    return base + path;
+    return getBase(req) + path;
 }
 
 var regIsolatePath = /^(?:[a-zA-Z]+:\/\/)?[^\/]*([^?]*)/;
@@ -42,6 +45,7 @@ function parse(uri) {
 }
 
 module.exports = {
+    getBase: getBase,
     url: url,
     parse: parse
 };

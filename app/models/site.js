@@ -5,9 +5,12 @@ var jsonld = require("jsonld");
 var modelUtils = require(__dirname + "/../lib/model_utils");
 var validate = modelUtils.validate;
 
-var ld_context = {
-    "name": "http://schema.org/name",
-};
+function ld_context(req){
+    return {
+        "name": "http://schema.org/name",
+        "devices": urls.getBase(req) + "/devices"
+    };
+}
 
 module.exports = function(sequelize, DataTypes) {
     var Site = sequelize.define("Site", {
@@ -22,16 +25,20 @@ module.exports = function(sequelize, DataTypes) {
                 },
                 jsonLD: function(req, instance, compressed, cb) {
                     setImmediate(function() {
+                        var selfUrl = urls.url(req, instance);
+                        var base = urls.getBase(req);
+                        console.log(selfUrl);
                         var ld_doc = {
                             "@type": "Site",
-                            "@id": urls.url(req, instance),
-                            "http://schema.org/name": instance.dataValues.name
+                            "@id": selfUrl,
+                            "http://schema.org/name": instance.dataValues.name,
                         };
+                        ld_doc[base + "/devices"] = urls.getBase(req) + "/devices?site=" + encodeURIComponent(selfUrl);
                         if (! compressed) {
                             cb(null, ld_doc);
                             return;
                         }
-                        jsonld.compact(ld_doc, ld_context, cb);
+                        jsonld.compact(ld_doc, ld_context(req), cb);
                     });
                 },
                 schema: function(edit) {
