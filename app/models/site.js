@@ -1,5 +1,6 @@
 'use-strict';
 
+var urls = require(__dirname + "/../lib/urls");
 var jsonld = require("jsonld");
 
 var ld_context = {
@@ -17,9 +18,11 @@ module.exports = function(sequelize, DataTypes) {
                 path: function(instance) {
                     return "/" + Site.custom.resourceName + "/" + instance.dataValues.id.toString();
                 },
-                jsonLD: function(instance, compressed, cb) {
+                jsonLD: function(req, instance, compressed, cb) {
                     setImmediate(function() {
                         var ld_doc = {
+                            "@type": "Site",
+                            "@id": urls.url(req, instance),
                             "http://schema.org/name": instance.dataValues.name
                         };
                         if (! compressed) {

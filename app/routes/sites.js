@@ -37,10 +37,9 @@ router.get('/', function(req, res, next) {
     var whereClause = ModelClass.custom.whereFromQuery(req.query) || {};
     var limit = req.query.limit ? Integer.parse(req.query.limit, 10) : 5;
     var offset = req.query.offset ? Integer.parse(req.query.offset, 10) : 0;
-    var compact = req.query.compact ? (req.query.compact === "true") : true;
     ModelClass.findAll({order: 'id DESC', where: whereClause, limit: limit, offset: offset}).then(function(result) {
         async.map(result, function(inst, cb) {
-            ModelClass.options.classMethods.jsonLD(inst, compact, cb);
+            ModelClass.options.classMethods.jsonLD(req, inst, true, cb);
         }, function(err, mapped) {
             if (err) {
                 render(req, res, 500, "error", {message: "Error when resolving results.", error: err});
@@ -68,7 +67,20 @@ router.post('/create', function(req, res, next) {
 });
 
 router.get(/^\/(\d+)\/?$/, function(req, res, next) {
-    renderNotImplemented(req, res);
+    var id = req.params[0];
+    ModelClass.findOne({where: {id: id}}).then(function(result) {
+        if (! result) {
+            render(req, res, 404, "error", {message: "Resource not found.", status: 404, error:{status: 404}});
+            return;
+        }
+        ModelClass.options.classMethods.jsonLD(req, result, true, function(err, jsonLD) {
+            if (err) {
+                render(req, res, 500, "error", {message: "Error when resolving result.", error: err});
+                return;
+            }
+            render(req, res, 200, "single", jsonLD);
+        });
+    });
 });
 
 router.get(/^\/(\d+)\/edit\/?$/, function(req, res, next) {
