@@ -3,6 +3,7 @@ var router = express.Router();
 var render = require(__dirname + '/../lib/render');
 var models = require(__dirname + '/../models/index');
 var urls = require(__dirname + '/../lib/urls');
+var async = require('async');
 
 function renderNotImplemented(req, res) {
     render(req, res, 500, 'error', { message: 'Not implemented', status: 500, error: new Error("Not Implemented") });
@@ -33,7 +34,20 @@ function containsAllRequiredFields(data) {
 }
 
 router.get('/', function(req, res, next) {
-    renderNotImplemented(req, res);
+    var whereClause = ModelClass.custom.whereFromQuery(req.query) || {};
+    var limit = req.query.limit ? Integer.parse(req.query.limit, 10) : 5;
+    var offset = req.query.offset ? Integer.parse(req.query.offset, 10) : 0;
+    ModelClass.findAll({order: 'id DESC', where: whereClause, limit: limit, offset: offset}).then(function(result) {
+        async.map(result, function(inst, cb) {
+            ModelClass.classMethods.jsonLD(inst, cb);
+        }, function(err, mapped) {
+            if (err) {
+                render(req, res, 500, "error", {message: "Error when resolving results.", error: err});
+                return;
+            }
+            render(req, res, 200, "list", mapped);
+        });
+    });
 });
 
 router.get('/create', function(req, res, next) {
@@ -47,7 +61,6 @@ router.post('/create', function(req, res, next) {
         return;
     }
     ModelClass.create(data).then(function(item) {
-        // render(req, res, 202, "post", {
         var link = urls.url(req, item);
         render(req, res, 202, "post", {link: link});
     });

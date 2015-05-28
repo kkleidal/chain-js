@@ -18,7 +18,8 @@ module.exports = function(sequelize, DataTypes) {
 
     ScalarDatum.custom = {
         resourceEnabled: true,
-        resourceName: "scalar-data"
+        resourceName: "scalar-data",
+        whereFromQuery: function(query) {}
     };
 
     return ScalarDatum;

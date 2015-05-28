@@ -14,7 +14,8 @@ module.exports = function(sequelize, DataTypes) {
 
     Metric.custom = {
         resourceEnabled: false,
-        resourceName: null
+        resourceName: null,
+        whereFromQuery: function(query) {}
     };
 
     return Metric;

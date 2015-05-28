@@ -9,6 +9,7 @@ var config    = require(__dirname + '/../config/config.json')[env];
 var sequelize = new Sequelize(config.database, config.username, config.password, config);
 var db        = {};
 
+var resourceLookup = {};
 fs
   .readdirSync(__dirname)
   .filter(function(file) {
@@ -17,6 +18,9 @@ fs
   .forEach(function(file) {
     var model = sequelize['import'](path.join(__dirname, file));
     db[model.name] = model;
+    if (model.custom.resourceEnabled) {
+        resourceLookup[model.custom.resourceName] = model;
+    }
   });
 
 Object.keys(db).forEach(function(modelName) {
@@ -27,5 +31,6 @@ Object.keys(db).forEach(function(modelName) {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+db.resourceLookup = resourceLookup;
 
 module.exports = db;

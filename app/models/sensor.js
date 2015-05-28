@@ -18,7 +18,8 @@ module.exports = function(sequelize, DataTypes) {
 
     Sensor.custom = {
         resourceEnabled: true,
-        resourceName: "sensors"
+        resourceName: "sensors",
+        whereFromQuery: function(query) {}
     };
 
     return Sensor;
