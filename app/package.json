@@ -13,6 +13,7 @@
     "debug": "~2.2.0",
     "express": "~4.12.4",
     "handlebars": "^3.0.3",
+    "jsonld": "^0.3.22",
     "morgan": "~1.5.3",
     "mysql": "^2.6.2",
     "sequelize": "^2.0.0-rc1",
