@@ -2,6 +2,8 @@
 
 var urls = require(__dirname + "/../lib/urls");
 var jsonld = require("jsonld");
+var modelUtils = require(__dirname + "/../lib/model_utils");
+var validate = modelUtils.validate;
 
 var ld_context = {
     "name": "http://schema.org/name",
@@ -31,6 +33,29 @@ module.exports = function(sequelize, DataTypes) {
                         }
                         jsonld.compact(ld_doc, ld_context, cb);
                     });
+                },
+                schema: function(edit) {
+                    var schema = {
+                        "title": "Site",
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "description": "http://schema.org/name",
+                                "type": "string"
+                            }
+                        }
+                    };
+                    if (edit) {
+                        schema.required = [];
+                    } else {
+                        schema.required = ["name"];
+                    }
+                    return schema;
+                },
+                adaptInputToDB: function(validatedInput) {
+                    return {
+                        "name": validatedInput.name
+                    };
                 }
             }
         });
